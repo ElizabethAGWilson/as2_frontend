@@ -73,7 +73,7 @@
           <a href="#"><img class="card-img-top" :src="getPhoto(auction.id)" alt=""></a>
           <div class="card-body">
             <h4 class="card-title">
-              <a href="#">{{ auction.title }}</a>
+              <a :href="'/auction/' + auction.id" v-on:click="">{{ auction.title }}</a>
             </h4>
             <h5>Current bid: ${{ auction.currentBid }}</h5>
             <p class="card-text text-muted">Reserve price: ${{ auction.reservePrice }}</p>
@@ -131,16 +131,32 @@
       filterAuctions: function() {
 
         let request = 'http://localhost:4941/api/v1/auctions?';
+        let query = "";
 
         if (this.statusSelect !== "" && this.statusSelect !== "All" && this.statusSelect !== null) {
-          request += "status=" + this.statusSelect;
+          query += "status=" + this.statusSelect + '&';
         }
 
-        // if (this.categorySelect !== "" && this.categorySelect !== "All" && this.categorySelect !== null) {
-        //
-        // }
+        if (this.categorySelect !== "" && this.categorySelect !== "All" && this.categorySelect !== null) {
 
-        this.$http.get(request)
+          let id = null;
+          for (let category of this.categories) {
+            if (category.categoryTitle === this.categorySelect) {
+              id = category.categoryId;
+            }
+          }
+
+          if (id !== null) {
+            query += "category-id=" + id + '&';
+          }
+        }
+
+        if (this.searchText !== null && this.searchText !== "") {
+          query += "q=" + this.searchText;
+        }
+
+
+        this.$http.get(request + query)
           .then(function (response) {
             if (response.status === 200) {
               this.auctions = response.data;

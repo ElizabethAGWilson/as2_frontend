@@ -6,6 +6,9 @@ import UserOptions from './UserOptions'
 import Categories from './Categories'
 import Auctions from './Auctions'
 
+import VeeValidate from 'vee-validate';
+Vue.use(VeeValidate);
+
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 

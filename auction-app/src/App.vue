@@ -13,9 +13,10 @@
           </div>
           <div class="modal-body">
             <div class="form-group row">
+              <!--<span v-show="errors.has('email')">{{ errors.first('email') }}</span>-->
               <label for="username-input" class="col-5 col-form-label">Username/email</label>
               <div class="col-10">
-                <input class="form-control" type="text" id="username-input" v-model="loginUsername">
+                <input v-validate="required" class="form-control" type="text" id="username-input" v-model="loginUsername">
               </div>
             </div>
             <!--<div class="form-group row">-->
@@ -74,8 +75,10 @@
             <div class="form-group row">
               <label for="email-input" class="col-5 col-form-label">Email</label>
               <div class="col-10">
-                <input class="form-control" type="email" v-model="registerEmail" id="email-input">
+                <input v-validate="'required|email'" class="form-control" type="email" v-model="registerEmail" id="email-input">
               </div>
+              <!--<span v-if="errors.has('email-input')">{{ errors.first('email-input') }}</span>-->
+              <!--<span>Heyyy</span>-->
             </div>
             <div class="form-group row">
               <label for="password-input" class="col-5 col-form-label">Password*</label>
@@ -105,7 +108,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Home
+              <a class="nav-link" href="/">Home
                 <span class="sr-only">(current)</span>
               </a>
             </li>
@@ -270,6 +273,7 @@
 
             if (response.status === 200) {
               this.loggedInUser = response.data;
+              this.sessionStorage.loggedInUser = response.data;
               // TODO close modal when logged in
             } else if (response.status === 400) {
               // TODO notify that username or password is incorrect
@@ -293,6 +297,7 @@
             alert(response.status);
             if (response.status === 200) {
               this.loggedInUser = null;
+              this.sessionStorage.loggedInUser = null;
             }
           }, function(error) {
             this.error = error;
