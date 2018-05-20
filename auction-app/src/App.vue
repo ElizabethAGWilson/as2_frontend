@@ -5,39 +5,48 @@
     <div class="modal" tabindex="-1" role="dialog" id="loginModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Login</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group row">
-              <!--<span v-show="errors.has('email')">{{ errors.first('email') }}</span>-->
-              <label for="username-input" class="col-5 col-form-label">Username/email</label>
-              <div class="col-10">
-                <input v-validate="required" class="form-control" type="text" id="username-input" v-model="loginUsername">
-              </div>
+          <form @submit="checkLogin" >
+            <div class="modal-header">
+              <h5 class="modal-title">Login</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
-            <!--<div class="form-group row">-->
+            <div class="modal-body">
+              <div class="form-group row">
+                <!--<span v-show="errors.has('email')">{{ errors.first('email') }}</span>-->
+                <label for="username-input" class="col-5 col-form-label">Username/email</label>
+                <div class="col-10">
+                  <input class="form-control" type="text" id="username-input" v-model="loginUsername" required>
+                </div>
+              </div>
+              <!--<div class="form-group row">-->
               <!--<label for="email-input" class="col-2 col-form-label">Email</label>-->
               <!--<div class="col-10">-->
-                <!--<input class="form-control" type="email" id="email-input">-->
+              <!--<input class="form-control" type="email" id="email-input">-->
               <!--</div>-->
-            <!--</div>-->
-            <div class="form-group row">
-              <label for="password-input" class="col-5 col-form-label">Password*</label>
-              <div class="col-10">
-                <input class="form-control" type="password" id="password-input" v-model="loginPassword">
+              <!--</div>-->
+              <div class="form-group row">
+                <label for="password-input" class="col-5 col-form-label">Password*</label>
+                <div class="col-10">
+                  <input class="form-control" type="password" id="password-input" v-model="loginPassword" required>
+                </div>
+              </div>
+              <div class="form-group row">
+                <p></p>
               </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <a href="#" data-toggle="modal" data-target="#registerModal" data-dismiss="modal">Register</a>
-            <button type="button" class="btn btn-primary" v-on:click="login()">Login</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <div class="modal-footer">
+              <a data-toggle="modal" data-target="#registerModal" data-dismiss="modal">Register</a>
 
-          </div>
+              <!--<button type="button" class="btn btn-primary" v-on:click="login()">Login</button>-->
+              <button type="submit" class="btn btn-primary">Login</button>
+
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+            </div>
+          </form>
+
 
         </div>
       </div>
@@ -89,7 +98,7 @@
           </div>
           <div class="modal-footer">
             <a href="#" data-toggle="modal" data-target="#loginModal" data-dismiss="modal">Login</a>
-            <button type="button" class="btn btn-primary" v-on:click="register()" data-dismiss="modal">Register</button>
+            <button type="button" class="btn btn-primary" v-on:click="register()" >Register</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
           </div>
@@ -114,14 +123,14 @@
             </li>
 
 
-            <li v-if="loggedInUser === null" class="nav-item">
+            <li v-if="!loggedIn()" class="nav-item">
               <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Login</a>
             </li>
             <li v-else class="nav-item">
               <a class="nav-link" href="#" v-on:click="logout()">Logout</a>
             </li>
 
-            <li v-if="loggedInUser === null" class="nav-item">
+            <li v-if="!loggedIn()" class="nav-item">
               <a class="nav-link" href="#" data-toggle="modal" data-target="#registerModal">Register</a>
             </li>
             <li v-else class="nav-item">
@@ -223,10 +232,13 @@
         registerPassword: "",
         registerEmail: "",
         loginUsername: "",
-        loginPassword: ""
+        loginPassword: "",
+        loginErrors: [],
+        showLoginModal: false
         //token: null
       }
     },
+
     methods: {
 
       register: function() {
@@ -253,28 +265,47 @@
           })
       },
 
-      login: function(login, password) {
+      checkLogin: function(e) {
+        this.loginErrors = [];
+        e.preventDefault();
+
+        if (this.loginUsername === "") {
+          this.loginErrors.push("Username or email required");
+        }
+        if (this.loginPassword === "") {
+          this.loginPassword.push("Password required");
+        }
+
+        if (!this.loginErrors.length) {
+          this.login();
+        }
+
+      },
+
+      login: function() {
+
+        alert(sessionStorage.getItem('token'));
 
         let data = {
-          password: password
+          password: this.loginPassword
         };
 
-        if (login.match(/@/)) {
-          data['email'] = login;
-        } else if (login !== ""){
-          data['username'] = login;
+        if (this.loginUsername.match(/@/)) {
+          data['email'] = this.loginUsername;
         } else {
-          // TODO validation - should have at least one of
-          return;
+          data['username'] = this.loginUsername;
         }
 
         this.$http.post('http://localhost:4941/api/v1/users/login', data)
           .then(function(response) {
 
             if (response.status === 200) {
+
+
               this.loggedInUser = response.data;
-              this.sessionStorage.loggedInUser = response.data;
-              // TODO close modal when logged in
+              //this.sessionStorage.loggedInUser = response.data;
+              sessionStorage.setItem('token', response.data.token);
+              window.location.reload();
             } else if (response.status === 400) {
               // TODO notify that username or password is incorrect
             }
@@ -287,24 +318,50 @@
 
       logout: function() {
 
-        //alert("I was called");
-        this.$http.post('http://localhost:4941/api/v1/users/logout', {
+
+        // sessionStorage.setItem('token', null);
+        // alert(this.loggedIn());
+        // alert(sessionStorage.getItem('token'));
+        // if () {
+        //
+        // }
+
+        //alert(this.loggedIn());
+
+        //alert("Token: " + sessionStorage.getItem('token'));
+        this.$http.post('http://localhost:4941/api/v1/users/logout', {}, {
           headers: {
-            'X-Authorization': loggedInUser.token
+            'X-Authorization': sessionStorage.getItem('token')
+            //'X-Authorization': 'afdb624b749983ddd94f6fdb0ffd675f'
           }
         })
           .then(function(response) {
-            alert(response.status);
+            alert("the promise returned");
             if (response.status === 200) {
               this.loggedInUser = null;
-              this.sessionStorage.loggedInUser = null;
+              sessionStorage.setItem('token', "");
+              window.location.reload();
             }
           }, function(error) {
             this.error = error;
             this.errorFlag = true;
-            alert(error.message);
+            //alert(error.message);
           });
-          alert("got here");
+
+      },
+
+      loggedIn: function() {
+        // alert(sessionStorage.getItem('token') === null);
+        // alert(sessionStorage.getItem('token'));
+
+        return(!(sessionStorage.getItem('token') === null || sessionStorage.getItem('token') === ""));
+
+        // if (sessionStorage.getItem('token') === null) {
+        //   return false;
+        // } else {
+        //   return true;
+        // }
+        // return sessionStorage.getItem('token').length;
       }
     }
   }

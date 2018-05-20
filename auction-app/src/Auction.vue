@@ -21,6 +21,11 @@
           <div class="card-header">
             Bid History
           </div>
+
+          <div class="card-body">
+            <p v-if="bids.length === 0">No bids to display...</p>
+          </div>
+
           <div class="card-body" v-for="bid in bids.reverse()">
             <p>Bidder: {{ bid.buyerUsername }}</p>
             <p>Bid amount : ${{ bid.amount }}</p>

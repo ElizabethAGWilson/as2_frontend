@@ -50,15 +50,22 @@
       </div>
     </div>
 
-    <div>
+    <!--<div v-if="sessionStorage.getItem('token').length">-->
+    <div v-if="loggedIn()">
       <button type="button" class="btn btn-outline-secondary btn-block btn-space" data-toggle="modal" data-target="#createModal">Create Auction</button>
-      <h3>Categories</h3>
-      <div class="list-group" v-for="category in categories">
-        <a href="#" class="list-group-item">{{ category.categoryTitle }}</a>
-        <!--<a href="#" class="list-group-item">Equipment</a>-->
-        <!--<a href="#" class="list-group-item">Vehicles</a>-->
-        <!--<a href="#" class="list-group-item">Property</a>-->
-        <!--<a href="#" class="list-group-item">Other</a>-->
+      <br>
+      <h4>Buying</h4>
+      <div class="list-group">
+        <p v-on:click="childAuctionsWon()" class="list-group-item">Auctions won</p>
+        <!--<a href="#" class="list-group-item">Auctions won</a>-->
+        <a @click="childAuctionsBid()" class="list-group-item">Auctions bid on</a>
+      </div>
+      <br>
+      <h4>Selling</h4>
+      <div class="list-group">
+        <a v-on:click="childCurrentAuctions()" class="list-group-item">Current auctions</a>
+        <a v-on:click="childSoldAuctions()" class="list-group-item">Past sold auctions</a>
+        <a v-on:click="childUnsoldAUctions()" class="list-group-item">Past unsold auctions</a>
       </div>
     </div>
     <!--<button type="button" class="btn btn-outline-secondary btn-block btn-space">Create Auction</button>-->
@@ -99,6 +106,30 @@
                 this.categories = response.data;
               }
             })
+        },
+
+        loggedIn: function() {
+          return(!(sessionStorage.getItem('token') === null || sessionStorage.getItem('token') === ""));
+        },
+
+        childAuctionsWon: function() {
+          this.$root.auctionsWon();
+        },
+
+        childAuctionsBid: function() {
+          this.$root.auctionsBid();
+        },
+
+        childCurrentAuctions: function() {
+          this.$root.currentAuctions();
+        },
+
+        childSoldAuctions: function() {
+          this.$root.auctionsSold();
+        },
+
+        childUnsoldAUctions: function() {
+          this.$root.auctionsUnsold();
         }
       }
     }

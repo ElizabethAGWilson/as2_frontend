@@ -162,7 +162,33 @@
               this.auctions = response.data;
             }
           })
-      }
+      },
+
+      auctionsWon: function() {
+        this.$http.get('http://localhost:4941/api/v1/my_won_auctions')
+          .then(function(response) {
+            if (reponse.status === 200) {
+              this.auctions = response.data();
+            }
+          })
+      },
+
+      auctionsBid: function() {
+
+      },
+
+      currentAuctions: function() {
+
+      },
+
+      auctionsSold: function() {
+
+      },
+
+      auctionsUnsold: function() {
+
+      },
+
     }
   }
 
