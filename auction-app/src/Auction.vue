@@ -17,6 +17,25 @@
         </div>
         <!-- /.card -->
 
+        <div v-if="loggedIn()" class="card card-outline-secondary my-4">
+          <div class="card-header">
+            Make a bid
+          </div>
+
+          <div  class="card-body">
+            <!--<form @submit="placeBid()">-->
+              <div class="form-group row input-group">
+                <input class="form-control" type="number" id="bid-input" v-model="bid" required>
+                  <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" v-on:click="placeBid()">Place bid</button>
+                  </span>
+              </div>
+              <p class="text-danger" v-if="bidTooLow">Bid must be greater than the current bid</p>
+              <p class="text-danger" v-if="fieldBlank">Amount field cannot be blank</p>
+            <!--</form>-->
+          </div>
+        </div>
+
         <div class="card card-outline-secondary my-4">
           <div class="card-header">
             Bid History
@@ -27,7 +46,7 @@
           </div>
 
           <div class="card-body" v-for="bid in bids.reverse()">
-            <p>Bidder: {{ bid.buyerUsername }}</p>
+            <a :href="'/user/' + bid.buyerId">Bidder: {{ bid.buyerUsername }}</a>
             <p>Bid amount : ${{ bid.amount }}</p>
             <small class="text-muted">{{ new Date(bid.datetime).toUTCString() }}</small>
             <hr>
@@ -47,7 +66,10 @@
         auction: null,
         message: "hello",
         photo: "",
-        bids: null
+        bids: null,
+        bid: 0,
+        bidTooLow: false,
+        fieldBlank: false
       }
     },
 
@@ -81,6 +103,34 @@
           .then(function(response) {
             return response.data.username;
           })
+      },
+
+      placeBid: function() {
+
+        this.bidTooLow = false;
+
+        if (this.bid <= this.auction.currentBid) {
+          this.bidTooLow = true;
+          return;
+        }
+
+        let route = 'http://localhost:4941/api/v1/auctions/' + this.$route.params.auctionId + '/bids?amount=' + this.bid;
+
+        this.$http.post(route, {}, {
+          headers: {
+            'X-Authorization': sessionStorage.getItem('token')
+          }
+        })
+          .then(function(response) {
+            if (response.status === 201) {
+              getBids();
+              window.location.reload();
+            }
+          })
+      },
+
+      loggedIn: function() {
+        return(!(sessionStorage.getItem('token') === null || sessionStorage.getItem('token') === ""));
       }
     }
   }

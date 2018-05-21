@@ -83,9 +83,10 @@
 
     </div>
     <!-- /.row -->
-
   </div>
   <!-- /.col-lg-9 -->
+
+
 </template>
 
 <script>
@@ -103,9 +104,28 @@
     mounted: function() {
       this.getAuctions();
       this.getCategories();
+      this.reset();
     },
 
     methods: {
+
+      reset: function() {
+
+        // this.$http.post('http://localhost:4941/api/v1/reset')
+        //   .then(function(response) {
+        //     if (response.status === 200) {
+        //       alert('reset!');
+        //     }
+        //   });
+        // //
+        // this.$http.post('http://localhost:4941/api/v1/resample')
+        //   .then(function(response) {
+        //     if (response.status === 201) {
+        //       alert('resampled!');
+        //     }
+        //   });
+      },
+
       getAuctions: function() {
         this.$http.get('http://localhost:4941/api/v1/auctions')
           .then(function(response) {
@@ -165,6 +185,7 @@
       },
 
       auctionsWon: function() {
+        alert('called');
         this.$http.get('http://localhost:4941/api/v1/my_won_auctions')
           .then(function(response) {
             if (reponse.status === 200) {

@@ -134,7 +134,7 @@
               <a class="nav-link" href="#" data-toggle="modal" data-target="#registerModal">Register</a>
             </li>
             <li v-else class="nav-item">
-              <a class="nav-link" href="#">Profile</a>
+              <a class="nav-link" :href="userProfile()" >Profile</a>
             </li>
 
             <!--<li v-else class="nav-item">-->
@@ -203,7 +203,7 @@
       <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
       <!--<strong>Warning!</strong> Better check yourself, you're not looking too good.-->
     <!--</div>-->
-
+    <a v-on:auctions-won="temp()"></a>
   </div>
 </template>
 
@@ -241,6 +241,10 @@
 
     methods: {
 
+      temp: function() {
+        alert('worked!');
+      },
+
       register: function() {
         let data = {
           username: this.registerUsername,
@@ -255,7 +259,10 @@
         this.$http.post('http://localhost:4941/api/v1/users', data)
           .then(function(response) {
             if (response.status === 201) {
-              this.login(this.registerUsername, this.registerPassword);
+              this.loginUsername = this.registerUsername;
+              this.password = this.registerPassword;
+              this.login();
+              window.location.reload();
               //this.loggedInUser = response.id;
             }
           }, function(error) {
@@ -284,7 +291,7 @@
 
       login: function() {
 
-        alert(sessionStorage.getItem('token'));
+        // alert(sessionStorage.getItem('token'));
 
         let data = {
           password: this.loginPassword
@@ -305,6 +312,7 @@
               this.loggedInUser = response.data;
               //this.sessionStorage.loggedInUser = response.data;
               sessionStorage.setItem('token', response.data.token);
+              sessionStorage.setItem('id', response.data.id);
               window.location.reload();
             } else if (response.status === 400) {
               // TODO notify that username or password is incorrect
@@ -327,12 +335,9 @@
         // }
 
         //alert(this.loggedIn());
-
-        //alert("Token: " + sessionStorage.getItem('token'));
         this.$http.post('http://localhost:4941/api/v1/users/logout', {}, {
           headers: {
             'X-Authorization': sessionStorage.getItem('token')
-            //'X-Authorization': 'afdb624b749983ddd94f6fdb0ffd675f'
           }
         })
           .then(function(response) {
@@ -340,6 +345,7 @@
             if (response.status === 200) {
               this.loggedInUser = null;
               sessionStorage.setItem('token', "");
+              sessionStorage.setItem('id', "");
               window.location.reload();
             }
           }, function(error) {
@@ -362,6 +368,10 @@
         //   return true;
         // }
         // return sessionStorage.getItem('token').length;
+      },
+
+      userProfile: function() {
+        return '/user/' + sessionStorage.getItem('id');
       }
     }
   }

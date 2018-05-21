@@ -2,49 +2,95 @@
 
 
   <div>
-    <!-- Login modal -->
+    <!-- Create auction modal -->
     <div class="modal" tabindex="-1" role="dialog" id="createModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Create auction</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group row">
-              <label for="title-input" class="col-5 col-form-label">Auction title</label>
-              <div class="col-10">
-                <input class="form-control" type="text" id="title-input" v-model="titleInput">
-              </div>
+          <form @submit="checkCreate">
+            <div class="modal-header">
+              <h5 class="modal-title">Create auction</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
-            <div class="form-group row">
-              <label for="descriptionInput" class="col-5 col-form-label">Description of item</label>
-              <div class="col-10">
-                <textarea rows="3" required id="descriptionInput"  class="form-control"></textarea>
-                <!--<input class="form-control" type="text" id="descriptionInput" v-model="titleInput">-->
+            <div class="modal-body">
+              <div class="form-group row">
+                <label for="title-input" class="col-5 col-form-label">Auction title</label>
+                <div class="col-12">
+                  <input class="form-control" type="text" id="title-input" v-model="titleInput" required>
+                </div>
               </div>
-            </div>
-            <!--<div class="form-group row">-->
-            <!--<label for="email-input" class="col-2 col-form-label">Email</label>-->
-            <!--<div class="col-10">-->
-            <!--<input class="form-control" type="email" id="email-input">-->
-            <!--</div>-->
-            <!--</div>-->
-            <div class="form-group row">
-              <label for="password-input" class="col-5 col-form-label">Password*</label>
-              <div class="col-10">
-                <input class="form-control" type="password" id="password-input" v-model="loginPassword">
+              <div class="form-group row">
+                <label  class="col-5 col-form-label">Description of item</label>
+                <div class="col-12">
+                  <textarea rows="2" required id="descriptionInput"  class="form-control" v-model="descriptionInput"></textarea>
+                  <!--<input class="form-control" type="text" id="descriptionInput" v-model="titleInput">-->
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <!--<a href="#" data-toggle="modal" data-target="#registerModal" data-dismiss="modal">Register</a>-->
-            <button type="button" class="btn btn-primary">Submit</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <!--<div class="form-group row">-->
+              <!--<label for="email-input" class="col-2 col-form-label">Email</label>-->
+              <!--<div class="col-10">-->
+              <!--<input class="form-control" type="email" id="email-input">-->
+              <!--</div>-->
+              <!--</div>-->
 
-          </div>
+              <div class="form-group-row">
+                <label for="categorySelect" class="col-5 col-form-label">Category</label>
+                <!--<div class="col-10">-->
+                <select required class="form-control" id="categorySelect" v-model="categorySelect">
+                  <option v-for="category in categories">{{ category.categoryTitle }}</option>
+                </select>
+                <!--</div>-->
+              </div>
+              <div class="form-group row">
+                <label for="startdate-input" class="col-5 col-form-label">Start date</label>
+                <div class="col-12">
+                  <input class="form-control" type="datetime-local" id="startdate-input" v-model="startDate" required>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="enddate-input" class="col-5 col-form-label">End date</label>
+                <div class="col-12">
+                  <input class="form-control" type="datetime-local" id="enddate-input" v-model="endDate" required>
+                </div>
+              </div>
+
+              <div class="form-group-row">
+                <label for="reservePrice" class="col-5 col-form-label">Reserve price</label>
+                <!--<div class="col-10">-->
+                <input class="form-control" type="number" id="reservePrice" v-model="reservePrice" required>
+                <!--</div>-->
+              </div>
+
+              <div class="form-group-row">
+                <label for="startingBid" class="col-5 col-form-label">Starting bid</label>
+                <!--<div class="col-10">-->
+                <input class="form-control" type="number" id="startingBid" v-model="reservePrice" required>
+                <!--</div>-->
+              </div>
+
+              <div class="form-group row move-left">
+                <!--<div class="col-12">-->
+                  <!--<label class="move-left">Select image for item ...</label>-->
+                  <!--<input class="form-control-file" type="file" id="photo-input"/>-->
+                <!--</div>-->
+                <div class="col-12">
+                  <!--<input class="form-control-file" type="file" @change="onFileChanged">-->
+                  <br>
+
+                  <input class="form-control-file" type="file" @change="onFileChanged">
+                  <!--<button @click="onUpload">Upload!</button>-->
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <!--<a href="#" data-toggle="modal" data-target="#registerModal" data-dismiss="modal">Register</a>-->
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+            </div>
+          </form>
+
 
         </div>
       </div>
@@ -56,7 +102,9 @@
       <br>
       <h4>Buying</h4>
       <div class="list-group">
-        <p v-on:click="childAuctionsWon()" class="list-group-item">Auctions won</p>
+        <!--<p v-on:click="childAuctionsWon()" class="list-group-item">Auctions won</p>-->
+        <button type="button" class="btn btn-outline-secondary">Auctions won</button>
+
         <!--<a href="#" class="list-group-item">Auctions won</a>-->
         <a @click="childAuctionsBid()" class="list-group-item">Auctions bid on</a>
       </div>
@@ -90,7 +138,13 @@
         return {
           categories: null,
           titleInput: "",
-          descriptionInput: ""
+          descriptionInput: "",
+          startDate: null,
+          endDate: null,
+          categorySelect: null,
+          reservePrice: 0,
+          startingBid: 0,
+          selectedFile: null
         }
       },
 
@@ -128,9 +182,82 @@
           this.$root.auctionsSold();
         },
 
-        childUnsoldAUctions: function() {
+        childUnsoldAuctions: function() {
           this.$root.auctionsUnsold();
+        },
+
+        checkCreate: function(e) {
+          e.preventDefault();
+
+          let id = 0;
+          for (let category of this.categories) {
+            if (category.categoryTitle === this.categorySelect) {
+              id = category.categoryId;
+            }
+          }
+
+          let data = {
+            categoryId: id,
+            title: this.titleInput,
+            description: this.descriptionInput,
+            startDateTime: new Date(this.startDate).getTime(),
+            endDateTime: new Date(this.endDate).getTime(),
+            reservePrice: this.reservePrice,
+            startingBid: this.startingBid
+          };
+
+          this.$http.post('http://localhost:4941/api/v1/auctions', JSON.stringify(data), {
+            headers: {
+              'X-Authorization': sessionStorage.getItem('token')
+            }
+          })
+            .then(function(response) {
+              if (response.status === 201) {
+                alert('worked!');
+              }
+            });
+
+          this.$http.post(
+            'http://localhost:4941/api/v1/auctions/6/photos',
+            this.selectedFile,
+            {
+              headers: {
+                "X-Authorization": "token",
+                "Content-Type": "image/jpeg"
+              }
+            }).then(response => {
+            // get body data
+            console.log("success")
+          }, response => {
+            // error callback
+            console.log("error")
+          });
+
+        },
+
+        onFileChanged (event) {
+          this.selectedFile = event.target.files[0]
+        },
+
+        onUpload() {
+          // upload file, get it from this.selectedFile
+          this.$http.post(
+            'http://localhost:4941/api/v1/auctions/6/photos',
+            this.selectedFile,
+            {
+              headers: {
+                "X-Authorization": "token",
+                "Content-Type": "image/jpeg"
+              }
+            }).then(response => {
+            // get body data
+            console.log("success")
+          }, response => {
+            // error callback
+            console.log("error")
+          });
         }
+
       }
     }
 </script>
@@ -138,5 +265,8 @@
 <style scoped>
   .btn-space {
     margin-bottom: 20px;
+  }
+  .move-left {
+    margin-right: 50px;
   }
 </style>
